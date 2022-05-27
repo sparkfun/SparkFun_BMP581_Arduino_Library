@@ -72,6 +72,7 @@ int8_t BMP581::init()
     // Initialize config values
     osrOdrConfig = {0};
     iirConfig = {0};
+    fifo = {0};
 
     // Set helper function pointers
     sensor.read = readRegisters;
@@ -180,6 +181,69 @@ int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)
 int8_t BMP581::getInterruptStatus(uint8_t* status)
 {
     return bmp5_get_interrupt_status(status, &sensor);
+}
+
+int8_t BMP581::setFIFOConfig(bmp5_fifo* fifoConfig)
+{
+    memcpy(&fifo, fifoConfig, sizeof(bmp5_fifo));
+    return bmp5_get_fifo_configuration(&fifo, &sensor);
+}
+
+int8_t BMP581::getFIFOLength(uint16_t* numData)
+{
+    return bmp5_get_fifo_len(numData, &fifo, &sensor);
+}
+
+int8_t BMP581::getFIFOData(bmp5_sensor_data* data, uint8_t numData)
+{
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    // Determine the number of bytes per data frame, 3 bytes per sensor
+    uint8_t bytesPerFrame;
+    if(fifo.frame_sel == BMP5_FIFO_TEMPERATURE_DATA
+        || fifo.frame_sel == BMP5_FIFO_PRESSURE_DATA)
+    {
+        bytesPerFrame = 3;
+    }
+    else
+    {
+        bytesPerFrame = 6;
+    }
+
+    // Set number of bytes to read based on user's buffer size. If this is larger
+    // than the number of bytes in the buffer, bmp5_get_fifo_data() will
+    // automatically limit it
+    fifo.length = numData * bytesPerFrame;
+
+    // Create buffer to hold all bytes of FIFO buffer
+    uint8_t byteBuffer[fifo.length];
+    fifo.data = byteBuffer;
+
+    // Get all bytes out of FIFO buffer
+    err = bmp5_get_fifo_data(&fifo, &sensor);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Parse raw data into temperature and pressure data
+    return bmp5_extract_fifo_data(&fifo, data);
+}
+
+int8_t BMP581::flushFIFO()
+{
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    // There isn't a simple way to flush the FIFO buffer unfortunately. However the
+    // FIFO is automatically flushed when certain config settings change, such as
+    // the frame selection. We can simply flip those bits twice, and the FIFO buffer
+    // will be flushed
+    fifo.frame_sel = ~fifo.frame_sel;
+    err = bmp5_get_fifo_configuration(&fifo, &sensor);
+    fifo.frame_sel = ~fifo.frame_sel;
+    return bmp5_get_fifo_configuration(&fifo, &sensor) | err;
 }
 
 BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)

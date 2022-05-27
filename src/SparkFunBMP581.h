@@ -82,6 +82,12 @@ class BMP581
         int8_t setInterruptConfig(BMP581_InterruptConfig* config);
         int8_t getInterruptStatus(uint8_t* status);
 
+        // FIFO control
+        int8_t setFIFOConfig(bmp5_fifo* fifoConfig);
+        int8_t getFIFOLength(uint16_t* numData);
+        int8_t getFIFOData(bmp5_sensor_data* data, uint8_t numData);
+        int8_t flushFIFO();
+
     private:
         // Sensor initialization, after communication interface has been selected
         int8_t begin();
@@ -104,6 +110,9 @@ class BMP581
 
         // Place to store IIR config values
         bmp5_iir_config iirConfig;
+
+        // Place to store FIFO config values
+        bmp5_fifo fifo;
 };
 
 #endif
