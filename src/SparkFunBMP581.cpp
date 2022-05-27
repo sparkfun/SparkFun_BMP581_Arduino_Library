@@ -144,6 +144,11 @@ int8_t BMP581::getOSRMultipliers(bmp5_osr_odr_press_config* config)
     return BMP5_OK;
 }
 
+int8_t BMP581::getOSREffective(bmp5_osr_odr_eff* osrOdrEffective)
+{
+    return bmp5_get_osr_odr_eff(osrOdrEffective, &sensor);
+}
+
 int8_t BMP581::setFilterCoefficients(uint8_t coefficientT, uint8_t coefficientP)
 {
     // Check whether coefficient is valid
