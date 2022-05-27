@@ -74,6 +74,9 @@ class BMP581
         int8_t setOSRMultipliers(bmp5_osr_odr_press_config config);
         int8_t getOSRMultipliers(bmp5_osr_odr_press_config* config);
 
+        // IIR filter control
+        int8_t setFilterCoefficients(uint8_t coefficientT, uint8_t coefficientP);
+
         // Interrupt control
         int8_t setInterruptConfig(BMP581_InterruptConfig* config);
         int8_t getInterruptStatus(uint8_t* status);

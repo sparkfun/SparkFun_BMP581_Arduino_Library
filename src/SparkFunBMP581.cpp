@@ -144,6 +144,20 @@ int8_t BMP581::getOSRMultipliers(bmp5_osr_odr_press_config* config)
     return BMP5_OK;
 }
 
+int8_t BMP581::setFilterCoefficients(uint8_t coefficientT, uint8_t coefficientP)
+{
+    // Check whether coefficient is valid
+    if(coefficientT > BMP5_IIR_FILTER_COEFF_127
+        || coefficientP > BMP5_IIR_FILTER_COEFF_127)
+    {
+        return BMP5_E_INVALID_SETTING;
+    }
+
+    iirConfig.set_iir_t = coefficientT;
+    iirConfig.set_iir_p = coefficientP;
+    return bmp5_set_iir_config(&iirConfig, &sensor);
+}
+
 int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)
 {
     // Variable to track errors returned by API calls
