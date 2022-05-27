@@ -1,0 +1,216 @@
+#include "SparkFunBMP581.h"
+
+BMP581::BMP581()
+{
+    // Nothing to do
+}
+
+int8_t BMP581::begin()
+{
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    // Initialize the sensor
+    err = init();
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Enable both pressure and temperature sensors
+    err = enablePress(BMP5_ENABLE);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Set to normal mode
+    return setMode(BMP5_POWERMODE_NORMAL);
+}
+
+int8_t BMP581::beginI2C(uint8_t address, TwoWire& wirePort)
+{
+    // Check whether address is valid option
+    if(address != BMP5_I2C_ADDR_PRIM && address != BMP5_I2C_ADDR_SEC)
+    {
+        // Invalid option, don't do anything
+        return BMP5_E_INVALID_SETTING;
+    }
+
+    // Address is valid option
+    interfaceData.i2cAddress = address;
+    interfaceData.i2cPort = &wirePort;
+
+    // Set interface
+    sensor.intf = BMP5_I2C_INTF;
+    interfaceData.interface = BMP5_I2C_INTF;
+
+    // Initialize sensor
+    return begin();
+}
+
+int8_t BMP581::beginSPI(uint8_t csPin, uint32_t clockFrequency)
+{
+    // Set up chip select pin
+    interfaceData.spiCSPin = csPin;
+    digitalWrite(csPin, HIGH); // Write high now to ensure pin doesn't go low
+    pinMode(csPin, OUTPUT);
+
+    // Set desired clock frequency
+    interfaceData.spiClockFrequency = clockFrequency;
+
+    // Set interface
+    sensor.intf = BMP5_SPI_INTF;
+    interfaceData.interface = BMP5_SPI_INTF;
+
+    // Initialize sensor
+    return begin();
+}
+
+int8_t BMP581::init()
+{
+    // Initialize config values
+    osrOdrConfig = {0};
+    iirConfig = {0};
+
+    // Set helper function pointers
+    sensor.read = readRegisters;
+    sensor.write = writeRegisters;
+    sensor.delay_us = usDelay;
+    sensor.intf_ptr = &interfaceData;
+
+    // Initialize the sensor
+    return bmp5_init(&sensor);
+}
+
+int8_t BMP581::setMode(bmp5_powermode mode)
+{
+    return bmp5_set_power_mode(mode, &sensor);
+}
+
+int8_t BMP581::enablePress(uint8_t pressEnable)
+{
+    osrOdrConfig.press_en = pressEnable;
+    return bmp5_set_osr_odr_press_config(&osrOdrConfig, &sensor);
+}
+
+int8_t BMP581::getSensorData(bmp5_sensor_data* data)
+{
+    bmp5_osr_odr_press_config config = {0};
+    config.press_en = BMP5_ENABLE;
+    return bmp5_get_sensor_data(data, &config, &sensor);
+}
+
+BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
+{
+    // Make sure the number of bytes is valid
+    if(numBytes == 0)
+    {
+        return BMP5_E_COM_FAIL;
+    }
+
+    // Get interface data
+    BMP581_InterfaceData* interfaceData = (BMP581_InterfaceData*) interfacePtr;
+
+    switch(interfaceData->interface)
+    {
+        case BMP5_I2C_INTF:
+            // Jump to desired register address
+            interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
+            interfaceData->i2cPort->write(regAddress);
+            if(interfaceData->i2cPort->endTransmission())
+            {
+                return BMP5_E_COM_FAIL;
+            }
+
+            // Read bytes from these registers
+            interfaceData->i2cPort->requestFrom(interfaceData->i2cAddress, numBytes);
+
+            // Store all requested bytes
+            for(uint32_t i = 0; i < numBytes && interfaceData->i2cPort->available(); i++)
+            {
+                dataBuffer[i] = interfaceData->i2cPort->read();
+            }
+            break;
+
+        case BMP5_SPI_INTF:
+            // Start transmission
+            SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
+            digitalWrite(interfaceData->spiCSPin, LOW);
+            SPI.transfer(regAddress | 0x80);
+
+            // Read all requested bytes
+            for(uint32_t i = 0; i < numBytes; i++)
+            {
+                dataBuffer[i] = SPI.transfer(0);;
+            }
+
+            // End transmission
+            digitalWrite(interfaceData->spiCSPin, HIGH);
+            SPI.endTransaction();
+            break;
+    }
+
+    return BMP5_OK;
+}
+
+BMP5_INTF_RET_TYPE BMP581::writeRegisters(uint8_t regAddress, const uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
+{
+    // Make sure the number of bytes is valid
+    if(numBytes == 0)
+    {
+        return BMP5_E_COM_FAIL;
+    }
+    // Get interface data
+    BMP581_InterfaceData* interfaceData = (BMP581_InterfaceData*) interfacePtr;
+
+    // Determine which interface we're using
+    switch(interfaceData->interface)
+    {
+        case BMP5_I2C_INTF:
+            // Begin transmission
+            interfaceData->i2cPort->beginTransmission(interfaceData->i2cAddress);
+
+            // Write the address
+            interfaceData->i2cPort->write(regAddress);
+            
+            // Write all the data
+            for(uint32_t i = 0; i < numBytes; i++)
+            {
+                interfaceData->i2cPort->write(dataBuffer[i]);
+            }
+
+            // End transmission
+            if(interfaceData->i2cPort->endTransmission())
+            {
+                return BMP5_E_COM_FAIL;
+            }
+            break;
+
+        case BMP5_SPI_INTF:
+            // Begin transmission
+            SPI.beginTransaction(SPISettings(interfaceData->spiClockFrequency, MSBFIRST, SPI_MODE0));
+            digitalWrite(interfaceData->spiCSPin, LOW);
+            
+            // Write the address
+            SPI.transfer(regAddress);
+            
+            // Write all the data
+            for(uint32_t i = 0; i < numBytes; i++)
+            {
+                SPI.transfer(dataBuffer[i]);
+            }
+
+            // End transmission
+            digitalWrite(interfaceData->spiCSPin, HIGH);
+            SPI.endTransaction();
+            break;
+    }
+
+    return BMP5_OK;
+}
+
+void BMP581::usDelay(uint32_t period, void* interfacePtr)
+{
+    delayMicroseconds(period);
+}
