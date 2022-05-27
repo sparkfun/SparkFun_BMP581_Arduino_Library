@@ -101,6 +101,68 @@ int8_t BMP581::getSensorData(bmp5_sensor_data* data)
     return bmp5_get_sensor_data(data, &config, &sensor);
 }
 
+int8_t BMP581::setODRFrequency(uint8_t odr)
+{
+    // Check whether ODR is valid
+    if(odr > BMP5_ODR_0_125_HZ)
+    {
+        return BMP5_E_INVALID_SETTING;
+    }
+
+    // TODO - Check whether this ODR is compatible with current OSR
+    
+    osrOdrConfig.odr = odr;
+    return bmp5_set_osr_odr_press_config(&osrOdrConfig, &sensor);
+}
+
+int8_t BMP581::getODRFrequency(uint8_t* odr)
+{
+    *odr = osrOdrConfig.odr;
+    return BMP5_OK;
+}
+
+int8_t BMP581::setOSRMultipliers(bmp5_osr_odr_press_config config)
+{
+    // Check whether OSR multipliers are valid
+    if(config.osr_t > BMP5_OVERSAMPLING_128X
+        || config.osr_p > BMP5_OVERSAMPLING_128X)
+    {
+        return BMP5_E_INVALID_SETTING;
+    }
+
+    // TODO - Check whether this OSR is compatible with current ODR
+    
+    osrOdrConfig.osr_t = config.osr_t;
+    osrOdrConfig.osr_p = config.osr_p;
+    return bmp5_set_osr_odr_press_config(&osrOdrConfig, &sensor);
+}
+
+int8_t BMP581::getOSRMultipliers(bmp5_osr_odr_press_config* config)
+{
+    config->osr_t = osrOdrConfig.osr_t;
+    config->osr_p = osrOdrConfig.osr_p;
+    return BMP5_OK;
+}
+
+int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)
+{
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    err = bmp5_int_source_select(&config->sources, &sensor);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    return bmp5_configure_interrupt(config->mode, config->polarity, config->drive, config->enable, &sensor);
+}
+
+int8_t BMP581::getInterruptStatus(uint8_t* status)
+{
+    return bmp5_get_interrupt_status(status, &sensor);
+}
+
 BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
 {
     // Make sure the number of bytes is valid

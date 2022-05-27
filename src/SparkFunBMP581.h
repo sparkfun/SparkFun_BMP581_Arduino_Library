@@ -36,7 +36,7 @@ struct BMP581_InterruptConfig
     enum bmp5_intr_en_dis enable;
 
     // Push-pull or open-drain
-    enum bmp5_intr_drive driveMode;
+    enum bmp5_intr_drive drive;
     
     // High or low signal level
     enum bmp5_intr_polarity polarity;
@@ -65,6 +65,18 @@ class BMP581
 
         // Data acquisistion
         int8_t getSensorData(bmp5_sensor_data* data);
+
+        // Output data rate (ODR) control
+        int8_t setODRFrequency(uint8_t odr);
+        int8_t getODRFrequency(uint8_t* odr);
+
+        // Oversampling (OSR) control
+        int8_t setOSRMultipliers(bmp5_osr_odr_press_config config);
+        int8_t getOSRMultipliers(bmp5_osr_odr_press_config* config);
+
+        // Interrupt control
+        int8_t setInterruptConfig(BMP581_InterruptConfig* config);
+        int8_t getInterruptStatus(uint8_t* status);
 
     private:
         // Sensor initialization, after communication interface has been selected
