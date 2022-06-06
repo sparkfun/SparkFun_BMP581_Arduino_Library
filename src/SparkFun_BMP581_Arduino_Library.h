@@ -71,7 +71,7 @@ class BMP581
         int8_t getODRFrequency(uint8_t* odr);
 
         // Oversampling (OSR) control
-        int8_t setOSRMultipliers(bmp5_osr_odr_press_config config);
+        int8_t setOSRMultipliers(bmp5_osr_odr_press_config* config);
         int8_t getOSRMultipliers(bmp5_osr_odr_press_config* config);
         int8_t getOSREffective(bmp5_osr_odr_eff* osrOdrEffective);
 

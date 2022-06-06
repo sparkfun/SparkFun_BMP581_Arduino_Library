@@ -122,19 +122,19 @@ int8_t BMP581::getODRFrequency(uint8_t* odr)
     return BMP5_OK;
 }
 
-int8_t BMP581::setOSRMultipliers(bmp5_osr_odr_press_config config)
+int8_t BMP581::setOSRMultipliers(bmp5_osr_odr_press_config* config)
 {
     // Check whether OSR multipliers are valid
-    if(config.osr_t > BMP5_OVERSAMPLING_128X
-        || config.osr_p > BMP5_OVERSAMPLING_128X)
+    if(config->osr_t > BMP5_OVERSAMPLING_128X
+        || config->osr_p > BMP5_OVERSAMPLING_128X)
     {
         return BMP5_E_INVALID_SETTING;
     }
 
     // TODO - Check whether this OSR is compatible with current ODR
     
-    osrOdrConfig.osr_t = config.osr_t;
-    osrOdrConfig.osr_p = config.osr_p;
+    osrOdrConfig.osr_t = config->osr_t;
+    osrOdrConfig.osr_p = config->osr_p;
     return bmp5_set_osr_odr_press_config(&osrOdrConfig, &sensor);
 }
 

@@ -47,7 +47,7 @@ void setup()
         .osr_t = BMP5_OVERSAMPLING_8X,
         .osr_p = BMP5_OVERSAMPLING_128X
     };
-    err = pressureSensor.setOSRMultipliers(osrMultipliers);
+    err = pressureSensor.setOSRMultipliers(&osrMultipliers);
     if(err)
     {
         // Setting OSR failed, most likely an invalid multiplier (code -12)
