@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include "SparkFunBMP581.h"
+#include "SparkFun_BMP581_Arduino_Library.h"
 
 // Create a new sensor object
 BMP581 pressureSensor;
@@ -18,7 +18,7 @@ void setup()
     Wire.begin();
 
     // Check if sensor is connected and initialize
-    // Address is optional (defaults to 0x77)
+    // Address is optional (defaults to 0x47)
     while(pressureSensor.beginI2C(i2cAddress) != BMP5_OK)
     {
         // Not connected, inform user

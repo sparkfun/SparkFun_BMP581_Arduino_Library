@@ -1,5 +1,5 @@
 #include <SPI.h>
-#include "SparkFunBMP581.h"
+#include "SparkFun_BMP581_Arduino_Library.h"
 
 // Create a new sensor object
 BMP581 pressureSensor;

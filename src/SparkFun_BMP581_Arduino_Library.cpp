@@ -1,4 +1,4 @@
-#include "SparkFunBMP581.h"
+#include "SparkFun_BMP581_Arduino_Library.h"
 
 BMP581::BMP581()
 {

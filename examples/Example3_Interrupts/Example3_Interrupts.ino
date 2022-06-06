@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include "SparkFunBMP581.h"
+#include "SparkFun_BMP581_Arduino_Library.h"
 
 // Create a new sensor object
 BMP581 pressureSensor;
@@ -62,7 +62,7 @@ void setup()
         {
             .drdy_en = BMP5_ENABLE,        // Trigger interrupts when data is ready
             .fifo_full_en = BMP5_DISABLE,  // Trigger interrupts when FIFO is full
-            .fifo_thres_en = BMP5_DISABLE, // Trigger interrupts when FIFO watermark is reached
+            .fifo_thres_en = BMP5_DISABLE, // Trigger interrupts when FIFO threshold is reached
             .oor_press_en = BMP5_DISABLE,  // Trigger interrupts when pressure goes out of range
         }
     };
