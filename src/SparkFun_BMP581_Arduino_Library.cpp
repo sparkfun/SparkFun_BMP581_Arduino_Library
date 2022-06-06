@@ -239,6 +239,16 @@ int8_t BMP581::flushFIFO()
     return bmp5_set_fifo_configuration(&fifo, &sensor) | err;
 }
 
+int8_t BMP581::readNVM(uint8_t addr, uint16_t* data)
+{
+    return nvm_read_addr(addr, data, &sensor);
+}
+
+int8_t BMP581::writeNVM(uint8_t addr, uint16_t data)
+{
+    return nvm_write_addr(addr, &data, &sensor);
+}
+
 BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
 {
     // Make sure the number of bytes is valid

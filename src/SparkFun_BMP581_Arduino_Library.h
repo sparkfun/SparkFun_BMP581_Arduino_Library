@@ -89,6 +89,10 @@ class BMP581
         int8_t getFIFOData(bmp5_sensor_data* data, uint8_t numData);
         int8_t flushFIFO();
 
+        // NVM control
+        int8_t readNVM(uint8_t addr, uint16_t* data);
+        int8_t writeNVM(uint8_t addr, uint16_t data);
+
     private:
         // Sensor initialization, after communication interface has been selected
         int8_t begin();
