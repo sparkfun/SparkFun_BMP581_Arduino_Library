@@ -71,7 +71,6 @@ int8_t BMP581::init()
 {
     // Initialize config values
     osrOdrConfig = {0};
-    iirConfig = {0};
     fifo = {0};
 
     // Set helper function pointers
@@ -150,18 +149,9 @@ int8_t BMP581::getOSREffective(bmp5_osr_odr_eff* osrOdrEffective)
     return bmp5_get_osr_odr_eff(osrOdrEffective, &sensor);
 }
 
-int8_t BMP581::setFilterCoefficients(uint8_t coefficientT, uint8_t coefficientP)
+int8_t BMP581::setFilterConfig(bmp5_iir_config* iirConfig)
 {
-    // Check whether coefficient is valid
-    if(coefficientT > BMP5_IIR_FILTER_COEFF_127
-        || coefficientP > BMP5_IIR_FILTER_COEFF_127)
-    {
-        return BMP5_E_INVALID_SETTING;
-    }
-
-    iirConfig.set_iir_t = coefficientT;
-    iirConfig.set_iir_p = coefficientP;
-    return bmp5_set_iir_config(&iirConfig, &sensor);
+    return bmp5_set_iir_config(iirConfig, &sensor);
 }
 
 int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)

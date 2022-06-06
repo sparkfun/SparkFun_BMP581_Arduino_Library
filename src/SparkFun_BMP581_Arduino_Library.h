@@ -76,7 +76,7 @@ class BMP581
         int8_t getOSREffective(bmp5_osr_odr_eff* osrOdrEffective);
 
         // IIR filter control
-        int8_t setFilterCoefficients(uint8_t coefficientT, uint8_t coefficientP);
+        int8_t setFilterConfig(bmp5_iir_config* iirConfig);
 
         // Interrupt control
         int8_t setInterruptConfig(BMP581_InterruptConfig* config);
@@ -107,9 +107,6 @@ class BMP581
 
         // Place to store OSR/ODR config values
         bmp5_osr_odr_press_config osrOdrConfig;
-
-        // Place to store IIR config values
-        bmp5_iir_config iirConfig;
 
         // Place to store FIFO config values
         bmp5_fifo fifo;

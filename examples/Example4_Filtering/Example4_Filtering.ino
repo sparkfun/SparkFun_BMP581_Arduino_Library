@@ -36,7 +36,12 @@ void setup()
     // The BMP581 can filter both the temperature and pressure measurements individually.
     // By default, both filter coefficients are set to 0 (no filtering). We can smooth
     // out the measurements by increasing the coefficients with this function
-    err = pressureSensor.setFilterCoefficients(BMP5_IIR_FILTER_COEFF_127, BMP5_IIR_FILTER_COEFF_127);
+    bmp5_iir_config config =
+    {
+        .set_iir_t = BMP5_IIR_FILTER_COEFF_127,
+        .set_iir_p = BMP5_IIR_FILTER_COEFF_127
+    };
+    err = pressureSensor.setFilterConfig(&config);
     if(err)
     {
         // Setting coefficient failed, most likely an invalid coefficient (code -12)
