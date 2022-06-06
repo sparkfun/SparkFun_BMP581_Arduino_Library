@@ -181,7 +181,7 @@ int8_t BMP581::getInterruptStatus(uint8_t* status)
 int8_t BMP581::setFIFOConfig(bmp5_fifo* fifoConfig)
 {
     memcpy(&fifo, fifoConfig, sizeof(bmp5_fifo));
-    return bmp5_get_fifo_configuration(&fifo, &sensor);
+    return bmp5_set_fifo_configuration(&fifo, &sensor);
 }
 
 int8_t BMP581::getFIFOLength(uint16_t* numData)
@@ -234,11 +234,11 @@ int8_t BMP581::flushFIFO()
     // There isn't a simple way to flush the FIFO buffer unfortunately. However the
     // FIFO is automatically flushed when certain config settings change, such as
     // the frame selection. We can simply flip those bits twice, and the FIFO buffer
-    // will be flushed
+    // will be flushed without changing the frame selection
     fifo.frame_sel = ~fifo.frame_sel;
-    err = bmp5_get_fifo_configuration(&fifo, &sensor);
+    err = bmp5_set_fifo_configuration(&fifo, &sensor);
     fifo.frame_sel = ~fifo.frame_sel;
-    return bmp5_get_fifo_configuration(&fifo, &sensor) | err;
+    return bmp5_set_fifo_configuration(&fifo, &sensor) | err;
 }
 
 BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
