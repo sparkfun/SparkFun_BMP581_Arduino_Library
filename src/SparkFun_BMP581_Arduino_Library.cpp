@@ -96,9 +96,7 @@ int8_t BMP581::enablePress(uint8_t pressEnable)
 
 int8_t BMP581::getSensorData(bmp5_sensor_data* data)
 {
-    bmp5_osr_odr_press_config config = {0};
-    config.press_en = BMP5_ENABLE;
-    return bmp5_get_sensor_data(data, &config, &sensor);
+    return bmp5_get_sensor_data(data, &osrOdrConfig, &sensor);
 }
 
 int8_t BMP581::setODRFrequency(uint8_t odr)
