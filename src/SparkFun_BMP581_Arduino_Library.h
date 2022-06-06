@@ -77,6 +77,7 @@ class BMP581
 
         // IIR filter control
         int8_t setFilterConfig(bmp5_iir_config* iirConfig);
+        int8_t setOORConfig(bmp5_oor_press_configuration* oorConfig);
 
         // Interrupt control
         int8_t setInterruptConfig(BMP581_InterruptConfig* config);

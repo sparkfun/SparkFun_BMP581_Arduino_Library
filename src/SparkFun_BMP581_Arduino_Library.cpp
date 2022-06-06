@@ -154,6 +154,11 @@ int8_t BMP581::setFilterConfig(bmp5_iir_config* iirConfig)
     return bmp5_set_iir_config(iirConfig, &sensor);
 }
 
+int8_t BMP581::setOORConfig(bmp5_oor_press_configuration* oorConfig)
+{
+    return bmp5_set_oor_configuration(oorConfig, &sensor);
+}
+
 int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)
 {
     // Variable to track errors returned by API calls

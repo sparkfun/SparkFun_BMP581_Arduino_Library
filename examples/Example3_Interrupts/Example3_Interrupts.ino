@@ -14,6 +14,10 @@ int interruptPin = 2;
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
 
+// OOR range specification
+uint32_t oorCenter = 83000;
+uint8_t oorWindow = 255;
+
 void setup()
 {
     // Start serial
@@ -51,6 +55,20 @@ void setup()
         Serial.println(err);
     }
 
+    // The BMP581 has multiple possible interrupt conditions, one of which is
+    // out-of-range (OOR). This will trigger once the measured pressure goes above
+    // or below some customizable range. This range is defined by a center value
+    // +/- a window value. The center value can be any 17-bit number in Pa
+    // (up to 131071 Pa), and the window can be any 8-bit number in Pa (up to 255)
+    bmp5_oor_press_configuration oorConfig
+    {
+        .oor_thr_p     = oorCenter, // Center value, up to 131071 Pa
+        .oor_range_p   = oorWindow, // Window value, up to 255 Pa
+        .cnt_lim       = BMP5_OOR_COUNT_LIMIT_15, // Number of measurements that need to be out of range before interrupt occurs
+        .oor_sel_iir_p = BMP5_DISABLE // Whether to check filtered or unfiltered measurements
+    };
+    pressureSensor.setOORConfig(&oorConfig);
+
     // Configure the BMP384 to trigger interrupts whenever a measurement is performed
     BMP581_InterruptConfig interruptConfig =
     {
@@ -63,7 +81,7 @@ void setup()
             .drdy_en = BMP5_ENABLE,        // Trigger interrupts when data is ready
             .fifo_full_en = BMP5_DISABLE,  // Trigger interrupts when FIFO is full
             .fifo_thres_en = BMP5_DISABLE, // Trigger interrupts when FIFO threshold is reached
-            .oor_press_en = BMP5_DISABLE,  // Trigger interrupts when pressure goes out of range
+            .oor_press_en = BMP5_ENABLE    // Trigger interrupts when pressure goes out of range
         }
     };
     err = pressureSensor.setInterruptConfig(&interruptConfig);
@@ -102,7 +120,7 @@ void loop()
             return;
         }
 
-        // Make sure this is the "data ready" interrupt condition
+        // Check if this is the "data ready" interrupt condition
         if(interruptStatus & BMP5_INT_ASSERTED_DRDY)
         {
             // Get measurements from the sensor
@@ -125,6 +143,11 @@ void loop()
                 Serial.print("Error getting data from sensor! Error code: ");
                 Serial.println(err);
             }
+        }
+        // Check if this is the "out-of-range" interrupt condition
+        else if(interruptStatus & BMP5_INT_ASSERTED_PRESSURE_OOR)
+        {
+            Serial.println("Pressure went out of range!");
         }
         else
         {
