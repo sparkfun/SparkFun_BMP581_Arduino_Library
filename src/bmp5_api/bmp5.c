@@ -440,6 +440,7 @@ int8_t bmp5_soft_reset(struct bmp5_dev *dev)
             rslt = bmp5_get_regs(BMP5_REG_CHIP_ID, &reg_data, 1, dev);
         }
 
+#if 0 // Suggestion by Bosch to fix init problem with checking INT_STATUS.por bit
         if (rslt == BMP5_OK)
         {
             rslt = bmp5_get_interrupt_status(&por_status, dev);
@@ -456,6 +457,7 @@ int8_t bmp5_soft_reset(struct bmp5_dev *dev)
                 }
             }
         }
+#endif
     }
 
     return rslt;

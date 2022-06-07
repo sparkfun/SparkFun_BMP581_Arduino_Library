@@ -69,6 +69,9 @@ int8_t BMP581::beginSPI(uint8_t csPin, uint32_t clockFrequency)
 
 int8_t BMP581::init()
 {
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
     // Initialize config values
     osrOdrConfig = {0};
     fifo = {0};
@@ -78,6 +81,13 @@ int8_t BMP581::init()
     sensor.write = writeRegisters;
     sensor.delay_us = usDelay;
     sensor.intf_ptr = &interfaceData;
+
+    // Reset the sensor
+    err = bmp5_soft_reset(&sensor);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
 
     // Initialize the sensor
     return bmp5_init(&sensor);
@@ -241,12 +251,12 @@ int8_t BMP581::flushFIFO()
 
 int8_t BMP581::readNVM(uint8_t addr, uint16_t* data)
 {
-    return nvm_read_addr(addr, data, &sensor);
+    return bmp5_nvm_read(addr, data, &sensor);
 }
 
 int8_t BMP581::writeNVM(uint8_t addr, uint16_t data)
 {
-    return nvm_write_addr(addr, &data, &sensor);
+    return bmp5_nvm_write(addr, &data, &sensor);
 }
 
 BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer, uint32_t numBytes, void* interfacePtr)
