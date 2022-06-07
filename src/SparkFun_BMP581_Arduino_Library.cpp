@@ -172,13 +172,13 @@ int8_t BMP581::setInterruptConfig(BMP581_InterruptConfig* config)
     // Variable to track errors returned by API calls
     int8_t err = BMP5_OK;
 
-    err = bmp5_int_source_select(&config->sources, &sensor);
+    err = bmp5_configure_interrupt(config->mode, config->polarity, config->drive, config->enable, &sensor);
     if(err != BMP5_OK)
     {
         return err;
     }
 
-    return bmp5_configure_interrupt(config->mode, config->polarity, config->drive, config->enable, &sensor);
+    return bmp5_int_source_select(&config->sources, &sensor);
 }
 
 int8_t BMP581::getInterruptStatus(uint8_t* status)

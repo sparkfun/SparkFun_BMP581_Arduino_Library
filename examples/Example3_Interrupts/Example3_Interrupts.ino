@@ -15,8 +15,8 @@ int interruptPin = 2;
 volatile bool interruptOccurred = false;
 
 // OOR range specification
-uint32_t oorCenter = 83000;
-uint8_t oorWindow = 255;
+uint32_t oorCenter = 84000;
+uint8_t oorWindow = 50;
 
 void setup()
 {
@@ -64,7 +64,7 @@ void setup()
     {
         .oor_thr_p     = oorCenter, // Center value, up to 131071 Pa
         .oor_range_p   = oorWindow, // Window value, up to 255 Pa
-        .cnt_lim       = BMP5_OOR_COUNT_LIMIT_15, // Number of measurements that need to be out of range before interrupt occurs
+        .cnt_lim       = BMP5_OOR_COUNT_LIMIT_3, // Number of measurements that need to be out of range before interrupt occurs
         .oor_sel_iir_p = BMP5_DISABLE // Whether to check filtered or unfiltered measurements
     };
     pressureSensor.setOORConfig(&oorConfig);
@@ -144,12 +144,15 @@ void loop()
                 Serial.println(err);
             }
         }
+
         // Check if this is the "out-of-range" interrupt condition
-        else if(interruptStatus & BMP5_INT_ASSERTED_PRESSURE_OOR)
+        if(interruptStatus & BMP5_INT_ASSERTED_PRESSURE_OOR)
         {
             Serial.println("Pressure went out of range!");
         }
-        else
+
+        // Check if neither interrupt occurred
+        if(!(interruptStatus & (BMP5_INT_ASSERTED_PRESSURE_OOR | BMP5_INT_ASSERTED_DRDY)))
         {
             Serial.println("Wrong interrupt condition!");
         }
