@@ -9,7 +9,7 @@ uint8_t i2cAddress = BMP581_I2C_ADDRESS_DEFAULT; // 0x47
 //uint8_t i2cAddress = BMP384_I2C_ADDRESS_SECONDARY; // 0x46
 
 // Pin used for interrupt detection
-int interruptPin = 2;
+int interruptPin = 5;
 
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
@@ -55,10 +55,18 @@ void setup()
         Serial.println(err);
     }
 
-    // Note - Larger oversampling requires longer measurement times, so ODR
-    // may need to be decreased. The datasheet contains a table with max ODR
-    // values for given OSR settings. You can determine whether your OSR and
-    // ODR are valid by calling this function
+    // Larger oversampling requires longer measurement times, so ODR may need
+    // to be decreased. The datasheet contains a table with max ODR values for
+    // given OSR settings (Table 7). You can set the ODR with this function.
+    err = pressureSensor.setODRFrequency(BMP5_ODR_10_HZ);
+    if(err != BMP5_OK)
+    {
+        // Setting ODR failed, most likely an invalid frequncy (code -12)
+        Serial.print("ODR setting failed! Error code: ");
+        Serial.println(err);
+    }
+    
+    // You can also verify whether your OSR and ODR are valid with this function
     bmp5_osr_odr_eff osrOdrEffective = {0};
     err = pressureSensor.getOSREffective(&osrOdrEffective);
     if(err != BMP5_OK)
