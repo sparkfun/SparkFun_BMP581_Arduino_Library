@@ -38,8 +38,10 @@ void setup()
     // out the measurements by increasing the coefficients with this function
     bmp5_iir_config config =
     {
-        .set_iir_t = BMP5_IIR_FILTER_COEFF_127,
-        .set_iir_p = BMP5_IIR_FILTER_COEFF_127
+        .set_iir_t = BMP5_IIR_FILTER_COEFF_127, // Set filter coefficient
+        .set_iir_p = BMP5_IIR_FILTER_COEFF_127, // Set filter coefficient
+        .shdw_set_iir_t = BMP5_ENABLE, // Store filtered data in data registers
+        .shdw_set_iir_p = BMP5_ENABLE  // Store filtered data in data registers
     };
     err = pressureSensor.setFilterConfig(&config);
     if(err)
