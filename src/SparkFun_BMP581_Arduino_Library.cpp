@@ -98,6 +98,11 @@ int8_t BMP581::setMode(bmp5_powermode mode)
     return bmp5_set_power_mode(mode, &sensor);
 }
 
+int8_t BMP581::getMode(bmp5_powermode* mode)
+{
+    return bmp5_get_power_mode(mode, &sensor);
+}
+
 int8_t BMP581::enablePress(uint8_t pressEnable)
 {
     osrOdrConfig.press_en = pressEnable;
@@ -188,13 +193,66 @@ int8_t BMP581::getInterruptStatus(uint8_t* status)
 
 int8_t BMP581::setFIFOConfig(bmp5_fifo* fifoConfig)
 {
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    // Copy desired config
     memcpy(&fifo, fifoConfig, sizeof(bmp5_fifo));
-    return bmp5_set_fifo_configuration(&fifo, &sensor);
+
+    // The sensor must be in stanby mode for the FIFO config to
+    // be set, grab the current power mode
+    bmp5_powermode originalMode;
+    err = getMode(&originalMode);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Now set to standby
+    err = setMode(BMP5_POWERMODE_STANDBY);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Now we can set the FIFO config
+    err = bmp5_set_fifo_configuration(&fifo, &sensor);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Finally, set back to original power mode
+    return setMode(originalMode);
 }
 
-int8_t BMP581::getFIFOLength(uint16_t* numData)
+int8_t BMP581::getFIFOLength(uint8_t* numData)
 {
-    return bmp5_get_fifo_len(numData, &fifo, &sensor);
+    // Variable to track errors returned by API calls
+    int8_t err = BMP5_OK;
+
+    uint16_t numBytes = 0;
+    err = bmp5_get_fifo_len(&numBytes, &fifo, &sensor);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Determine number of bytes per sample
+    uint8_t bytesPerSample = 1;
+    if(fifo.frame_sel == BMP5_FIFO_PRESS_TEMP_DATA)
+    {
+        bytesPerSample = 6;
+    }
+    else if((fifo.frame_sel == BMP5_FIFO_TEMPERATURE_DATA) || (fifo.frame_sel == BMP5_FIFO_PRESSURE_DATA))
+    {
+        bytesPerSample = 3;
+    }
+
+    // Compute number of samples in the FIFO buffer
+    *numData = numBytes / bytesPerSample;
+
+    return BMP5_OK;
 }
 
 int8_t BMP581::getFIFOData(bmp5_sensor_data* data, uint8_t numData)

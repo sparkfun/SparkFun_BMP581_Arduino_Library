@@ -61,6 +61,7 @@ class BMP581
         // Configuration control, the begin functions will set defaults for these
         int8_t init();
         int8_t setMode(bmp5_powermode mode);
+        int8_t getMode(bmp5_powermode* mode);
         int8_t enablePress(uint8_t pressEnable);
 
         // Data acquisistion
@@ -85,7 +86,7 @@ class BMP581
 
         // FIFO control
         int8_t setFIFOConfig(bmp5_fifo* fifoConfig);
-        int8_t getFIFOLength(uint16_t* numData);
+        int8_t getFIFOLength(uint8_t* numData);
         int8_t getFIFOData(bmp5_sensor_data* data, uint8_t numData);
         int8_t flushFIFO();
 
