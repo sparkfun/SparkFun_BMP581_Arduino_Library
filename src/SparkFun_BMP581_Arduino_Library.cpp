@@ -299,12 +299,38 @@ int8_t BMP581::flushFIFO()
 
     // There isn't a simple way to flush the FIFO buffer unfortunately. However the
     // FIFO is automatically flushed when certain config settings change, such as
-    // the frame selection. We can simply flip those bits twice, and the FIFO buffer
-    // will be flushed without changing the frame selection
-    fifo.frame_sel = ~fifo.frame_sel;
-    err = bmp5_set_fifo_configuration(&fifo, &sensor);
-    fifo.frame_sel = ~fifo.frame_sel;
-    return bmp5_set_fifo_configuration(&fifo, &sensor) | err;
+    // the power mode. We can simply change the power mode twice to flush the buffer
+
+    // Grab the current power mode
+    bmp5_powermode originalMode;
+    err = getMode(&originalMode);
+    if(err != BMP5_OK)
+    {
+        return err;
+    }
+
+    // Change the power mode to something else
+    if(originalMode != BMP5_POWERMODE_STANDBY)
+    {
+        // Sensor is not in standby mode, so default to that
+        err = setMode(BMP5_POWERMODE_STANDBY);
+        if(err != BMP5_OK)
+        {
+            return err;
+        }
+    }
+    else
+    {
+        // Already in standby, switch to forced instead
+        err = setMode(BMP5_POWERMODE_FORCED);
+        if(err != BMP5_OK)
+        {
+            return err;
+        }
+    }
+
+    // Finally, set back to original power mode
+    return setMode(originalMode);
 }
 
 int8_t BMP581::readNVM(uint8_t addr, uint16_t* data)

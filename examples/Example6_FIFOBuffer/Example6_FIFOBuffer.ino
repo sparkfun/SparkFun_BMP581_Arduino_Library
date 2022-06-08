@@ -137,18 +137,18 @@ void loop()
         // If the buffer length goes beyond the watermark level, then an
         // interrupt was missed. This example will likely run into issues,
         // so we'll just clear the FIFO buffer
-        // if(currentFIFOLength > numSamples)
-        // {
-        //     Serial.println("Too many samples in FIFO buffer, flushing...");
+        if(currentFIFOLength > numSamples)
+        {
+            Serial.println("Too many samples in FIFO buffer, flushing...");
             
-        //     err = pressureSensor.flushFIFO();
-        //     if(err != BMP5_OK)
-        //     {
-        //         // FIFO flush failed, most likely a communication error (code -2)
-        //         Serial.print("FIFO flush failed! Error code: ");
-        //         Serial.println(err);
-        //     }
-        // }
+            err = pressureSensor.flushFIFO();
+            if(err != BMP5_OK)
+            {
+                // FIFO flush failed, most likely a communication error (code -2)
+                Serial.print("FIFO flush failed! Error code: ");
+                Serial.println(err);
+            }
+        }
     }
 
     // Wait for interrupt to occur
