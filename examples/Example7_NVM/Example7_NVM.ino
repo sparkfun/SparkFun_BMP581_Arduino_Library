@@ -34,14 +34,14 @@ void setup()
 
     Serial.println("BMP581 connected!");
 
-    Serial.print("Writing data to NVM: ");
+    Serial.println("Writing data to NVM: ");
     Serial.println(dataToWrite);
 
     // The BMP581 contains non-volatile memory (NVM) that is primarily used for
     // calibration data internally by the sensor. However 6 bytes are user programmable,
     // stored in 3 2-byte locations (0x20 - 0x22).
     uint16_t dataIndex = 0;
-    for(uint8_t addr = BMP5_NVM_START_ADDR; addr < BMP5_NVM_END_ADDR; addr++)
+    for(uint8_t addr = BMP5_NVM_START_ADDR; addr <= BMP5_NVM_END_ADDR; addr++)
     {
         uint16_t data = dataToWrite[dataIndex] | (dataToWrite[dataIndex+1] << 8);
         dataIndex += 2;
@@ -49,15 +49,17 @@ void setup()
         pressureSensor.writeNVM(addr, data);
     }
     
-    Serial.print("Data read back from NVM: ");
+    Serial.println("Data read back from NVM: ");
 
     // Now we can read back the data and display it
-    for(uint8_t addr = BMP5_NVM_START_ADDR; addr < BMP5_NVM_END_ADDR; addr++)
+    for(uint8_t addr = BMP5_NVM_START_ADDR; addr <= BMP5_NVM_END_ADDR; addr++)
     {
         uint16_t data = 0;
         pressureSensor.readNVM(addr, &data);
-        Serial.println((char) data & 0xFF);
-        Serial.println((char) (data >> 8) & 0xFF);
+        char first = data & 0xFF;
+        char second = (data >> 8) & 0xFF;
+        Serial.print(first);
+        Serial.print(second);
     }
 }
 
