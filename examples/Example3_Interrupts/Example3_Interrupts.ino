@@ -68,14 +68,8 @@ void setup()
         .oor_sel_iir_p = BMP5_DISABLE // Whether to check filtered or unfiltered measurements
     };
     pressureSensor.setOORConfig(&oorConfig);
-    if(err != BMP5_OK)
-    {
-        // Interrupt settings failed, most likely a communication error (code -2)
-        Serial.print("OOR config failed! Error code: ");
-        Serial.println(err);
-    }
 
-    // Configure the BMP581 to trigger interrupts whenever a measurement is performed
+    // Configure the BMP384 to trigger interrupts whenever a measurement is performed
     BMP581_InterruptConfig interruptConfig =
     {
         .enable   = BMP5_INTR_ENABLE,    // Enable interrupts
