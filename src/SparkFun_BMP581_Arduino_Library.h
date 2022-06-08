@@ -1,5 +1,5 @@
-#ifndef __SPARKFUN_BMP384_H__
-#define __SPARKFUN_BMP384_H__
+#ifndef __SPARKFUN_BMP581_H__
+#define __SPARKFUN_BMP581_H__
 
 #include "Arduino.h"
 #include <Wire.h>

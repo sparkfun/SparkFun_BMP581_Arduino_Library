@@ -6,7 +6,7 @@ BMP581 pressureSensor;
 
 // I2C address selection
 uint8_t i2cAddress = BMP581_I2C_ADDRESS_DEFAULT; // 0x47
-//uint8_t i2cAddress = BMP384_I2C_ADDRESS_SECONDARY; // 0x46
+//uint8_t i2cAddress = BMP581_I2C_ADDRESS_SECONDARY; // 0x46
 
 // Pin used for interrupt detection
 int interruptPin = 2;

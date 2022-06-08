@@ -6,7 +6,7 @@ BMP581 pressureSensor;
 
 // I2C address selection
 uint8_t i2cAddress = BMP581_I2C_ADDRESS_DEFAULT; // 0x47
-//uint8_t i2cAddress = BMP384_I2C_ADDRESS_SECONDARY; // 0x46
+//uint8_t i2cAddress = BMP581_I2C_ADDRESS_SECONDARY; // 0x46
 
 // Pin used for interrupt detection
 int interruptPin = 2;
@@ -46,7 +46,7 @@ void setup()
     // The BMP581 can sample up to 240Hz in normal mode. However we don't want
     // interrupts to trigger that fast in this example, so we can lower the output
     // data rate (ODR) with this function. In this case, we're setting it to 1Hz.
-    // For all possible ODR settings, see bmp3_defs.h (line 282-313)
+    // For all possible ODR settings, see bmp5_defs.h (line 282-313)
     err = pressureSensor.setODRFrequency(BMP5_ODR_01_HZ);
     if(err != BMP5_OK)
     {
@@ -68,8 +68,14 @@ void setup()
         .oor_sel_iir_p = BMP5_DISABLE // Whether to check filtered or unfiltered measurements
     };
     pressureSensor.setOORConfig(&oorConfig);
+    if(err != BMP5_OK)
+    {
+        // Interrupt settings failed, most likely a communication error (code -2)
+        Serial.print("Interrupt settings failed! Error code: ");
+        Serial.println(err);
+    }
 
-    // Configure the BMP384 to trigger interrupts whenever a measurement is performed
+    // Configure the BMP581 to trigger interrupts whenever a measurement is performed
     BMP581_InterruptConfig interruptConfig =
     {
         .enable   = BMP5_INTR_ENABLE,    // Enable interrupts
