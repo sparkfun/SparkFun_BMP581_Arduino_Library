@@ -622,7 +622,7 @@ int8_t bmp5_get_sensor_data(struct bmp5_sensor_data *sensor_data,
 
     if (rslt == BMP5_OK)
     {
-        raw_data_t = (int32_t)((uint32_t)(reg_data[2] << 16) | (uint16_t)(reg_data[1] << 8) | reg_data[0]);
+        raw_data_t = (int32_t)(((uint32_t)reg_data[2] << 16) | ((uint16_t)reg_data[1] << 8) | reg_data[0]);
 
 #ifdef BMP5_USE_FIXED_POINT
 
@@ -639,7 +639,7 @@ int8_t bmp5_get_sensor_data(struct bmp5_sensor_data *sensor_data,
 
         if (osr_odr_press_cfg->press_en == BMP5_ENABLE)
         {
-            raw_data_p = (uint32_t)((uint32_t)(reg_data[5] << 16) | (uint16_t)(reg_data[4] << 8) | reg_data[3]);
+            raw_data_p = (uint32_t)(((uint32_t)reg_data[5] << 16) | ((uint16_t)reg_data[4] << 8) | reg_data[3]);
 
 #ifdef BMP5_USE_FIXED_POINT
 
