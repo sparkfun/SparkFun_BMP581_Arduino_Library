@@ -9,7 +9,7 @@ uint8_t i2cAddress = BMP581_I2C_ADDRESS_DEFAULT; // 0x47
 //uint8_t i2cAddress = BMP581_I2C_ADDRESS_SECONDARY; // 0x46
 
 // Pin used for interrupt detection
-int interruptPin = 5;
+int interruptPin = 2;
 
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
