@@ -14,9 +14,10 @@ int interruptPin = 2;
 // Flag to know when interrupts occur
 volatile bool interruptOccurred = false;
 
-// OOR range specification
-uint32_t oorCenter = 84000;
-uint8_t oorWindow = 50;
+// OOR range specification. The center pressure is 1 atm (101325 Pa), and the
+// window is the max value supported by the sensor (255)
+uint32_t oorCenter = 101325;
+uint8_t oorWindow = 255;
 
 void setup()
 {
@@ -154,7 +155,7 @@ void loop()
         // Check if this is the "out-of-range" interrupt condition
         if(interruptStatus & BMP5_INT_ASSERTED_PRESSURE_OOR)
         {
-            Serial.println("Pressure went out of range!");
+            Serial.println("Out of range condition triggered!");
         }
 
         // Check if neither interrupt occurred
