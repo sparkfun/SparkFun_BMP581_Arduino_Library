@@ -1,8 +1,15 @@
 SparkFun BMP581 Arduino Library
 ========================================
-[![SparkFun Pressure Sensor - BMP581 (Qwiic) ](https://cdn.sparkfun.com/r/600-600/assets/learn_tutorials/2/5/5/0/SparkFun_Pressure_Sensor_BMP581_Qwiic-Thumbnail.jpg)](https://www.sparkfun.com/products/20170)
-
-[*SparkFun Pressure Sensor - BMP581 (Qwiic)*](https://www.sparkfun.com/products/20170)
+<table class="table table-hover table-striped table-bordered">
+  <tr align="center">
+    <td><a href="https://www.sparkfun.com/products/20170"><img src="https://cdn.sparkfun.com/r/600-600/assets/learn_tutorials/2/5/5/0/SparkFun_Pressure_Sensor_BMP581_Qwiic-Thumbnail.jpg" alt="SparkFun Pressure Sensor - BMP581 (Qwiic)"></a></td>
+    <td><a href="https://www.sparkfun.com/products/20171"><img src="https://cdn.sparkfun.com/r/600-600/assets/learn_tutorials/2/5/5/0/BMP581_Qwiic_Micro-Thumbnail.jpg" alt="SparkFun Micro Pressure Sensor - BMP581 (Qwiic)"></a></td>
+  </tr>
+  <tr align="center">
+    <td><a href="https://www.sparkfun.com/products/20170"><i>SparkFun Pressure Sensor - BMP581 (Qwiic)</i></a></td>
+    <td><a href="https://www.sparkfun.com/products/20171"><i>SparkFun Micro Pressure Sensor - BMP581 (Qwiic)</i></a></td>
+  </tr>
+</table>
 
 This library provides an easy way to control the BMP384 pressure sensor. It is a very precise sensor, allowing down to 1/64 Pa pressure resolution, plus a built-in filter to reduce noise. That's sufficient to measure the difference in pressure of raising/lowering the sensor by less than an inch!
 
