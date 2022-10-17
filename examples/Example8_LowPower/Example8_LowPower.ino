@@ -92,7 +92,7 @@ void loop()
     // measurement, after which the sensor automatically returns to sleep mode
     // Note - the sensor can only enter forced mode from sleep mode. Transitions
     // between forced and normal modes are ignored
-    pressureSensor.setMode(BMP5_POWERMODE_FORCED);
+    err = pressureSensor.setMode(BMP5_POWERMODE_FORCED);
     if(err != BMP5_OK)
     {
         // Set mode failed, most likely a communication error (code -2)
