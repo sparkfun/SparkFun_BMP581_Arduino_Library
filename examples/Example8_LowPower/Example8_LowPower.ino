@@ -101,7 +101,6 @@ void loop()
     }
 
     // Wait for measurement, with a timeout period just in case
-    bool dataReady = false;
     uint32_t t0 = millis();
     uint32_t timeout = 1000;
     while(!interruptOccurred)
@@ -134,7 +133,7 @@ void loop()
     if(interruptStatus & BMP5_INT_ASSERTED_DRDY)
     {
         // Get measurements from the sensor
-        bmp5_sensor_data data = {0};
+        bmp5_sensor_data data = {0,0};
         int8_t err = pressureSensor.getSensorData(&data);
 
         // Check whether data was acquired successfully

@@ -45,7 +45,8 @@ void setup()
     bmp5_osr_odr_press_config osrMultipliers =
     {
         .osr_t = BMP5_OVERSAMPLING_8X,
-        .osr_p = BMP5_OVERSAMPLING_128X
+        .osr_p = BMP5_OVERSAMPLING_128X,
+        0,0 // Unused values, included to avoid compiler warnings-as-error
     };
     err = pressureSensor.setOSRMultipliers(&osrMultipliers);
     if(err)
@@ -67,7 +68,7 @@ void setup()
     }
     
     // You can also verify whether your OSR and ODR are valid with this function
-    bmp5_osr_odr_eff osrOdrEffective = {0};
+    bmp5_osr_odr_eff osrOdrEffective = {0,0,0};
     err = pressureSensor.getOSREffective(&osrOdrEffective);
     if(err != BMP5_OK)
     {
@@ -141,7 +142,7 @@ void loop()
         if(interruptStatus & BMP5_INT_ASSERTED_DRDY)
         {
             // Get measurements from the sensor
-            bmp5_sensor_data data = {0};
+            bmp5_sensor_data data = {0,0};
             int8_t err = pressureSensor.getSensorData(&data);
 
             // Check whether data was acquired successfully
