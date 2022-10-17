@@ -460,6 +460,8 @@ int8_t bmp5_soft_reset(struct bmp5_dev *dev)
 #endif
     }
 
+    (void)por_status; // Avoid compiler warning-as-error
+
     return rslt;
 }
 

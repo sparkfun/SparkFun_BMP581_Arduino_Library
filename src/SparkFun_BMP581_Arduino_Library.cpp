@@ -73,8 +73,8 @@ int8_t BMP581::init()
     int8_t err = BMP5_OK;
 
     // Initialize config values
-    osrOdrConfig = {0};
-    fifo = {0};
+    osrOdrConfig = {0,0,0,0};
+    fifo = {0,0,0,0,0,0,0,0,0};
 
     // Set helper function pointers
     sensor.read = readRegisters;
@@ -391,6 +391,9 @@ BMP5_INTF_RET_TYPE BMP581::readRegisters(uint8_t regAddress, uint8_t* dataBuffer
             digitalWrite(interfaceData->spiCSPin, HIGH);
             SPI.endTransaction();
             break;
+
+        case BMP5_I3C_INTF:
+            return BMP5_E_COM_FAIL; // I3C is not supported here
     }
 
     return BMP5_OK;
@@ -447,6 +450,9 @@ BMP5_INTF_RET_TYPE BMP581::writeRegisters(uint8_t regAddress, const uint8_t* dat
             digitalWrite(interfaceData->spiCSPin, HIGH);
             SPI.endTransaction();
             break;
+
+        case BMP5_I3C_INTF:
+            return BMP5_E_COM_FAIL; // I3C is not supported here
     }
 
     return BMP5_OK;
