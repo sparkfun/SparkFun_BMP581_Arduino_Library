@@ -41,7 +41,8 @@ void setup()
         .set_iir_t = BMP5_IIR_FILTER_COEFF_127, // Set filter coefficient
         .set_iir_p = BMP5_IIR_FILTER_COEFF_127, // Set filter coefficient
         .shdw_set_iir_t = BMP5_ENABLE, // Store filtered data in data registers
-        .shdw_set_iir_p = BMP5_ENABLE  // Store filtered data in data registers
+        .shdw_set_iir_p = BMP5_ENABLE, // Store filtered data in data registers
+        .iir_flush_forced_en = BMP5_DISABLE // Flush filter in forced mode
     };
     err = pressureSensor.setFilterConfig(&config);
     if(err)
@@ -55,7 +56,7 @@ void setup()
 void loop()
 {
     // Get measurements from the sensor
-    bmp5_sensor_data data = {0};
+    bmp5_sensor_data data = {0,0};
     int8_t err = pressureSensor.getSensorData(&data);
 
     // Check whether data was acquired successfully

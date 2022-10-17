@@ -61,7 +61,7 @@ void setup()
     // Configure the FIFO buffer to store pressure and temperature data
     // Note - this is also where the FIFO interrupt conditions are set
     // Note - this must be called before any other FIFO functions
-    bmp5_fifo fifoConfig = {0};
+    bmp5_fifo fifoConfig = {0,0,0,0,0,0,0,0,0};
     fifoConfig.frame_sel      = BMP5_FIFO_PRESS_TEMP_DATA; // Sensor data to store in FIFO buffer
     fifoConfig.dec_sel        = BMP5_FIFO_NO_DOWNSAMPLING; // Downsampling
     fifoConfig.mode           = BMP5_FIFO_MODE_STREAMING;  // Overwrite or stop writing once FIFO is full
